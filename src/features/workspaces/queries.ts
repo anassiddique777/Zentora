@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { MemberRow } from "./types";
 
 // All workspaces the user belongs to (for the switcher and resolver).
 export async function getUserWorkspaces(userId: string) {
@@ -15,6 +16,30 @@ export async function getWorkspaceForUser(slug: string, userId: string) {
   return prisma.workspace.findFirst({
     where: { slug, members: { some: { userId } } },
   });
+}
+
+// All members of a workspace for the settings page.
+export async function getWorkspaceMembers(
+  workspaceId: string,
+): Promise<MemberRow[]> {
+  const members = await prisma.workspaceMember.findMany({
+    where: { workspaceId },
+    // Owner first, then admins, then by join date.
+    orderBy: [{ role: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      role: true,
+      createdAt: true,
+      user: {
+        select: { id: true, name: true, email: true, avatarUrl: true },
+      },
+    },
+  });
+
+  return members.map(({ createdAt, ...member }) => ({
+    ...member,
+    joinedAt: createdAt.toISOString(),
+  }));
 }
 
 // Membership row for authorization checks in server actions.

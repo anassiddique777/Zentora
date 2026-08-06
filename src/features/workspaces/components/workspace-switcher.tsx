@@ -13,6 +13,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -70,23 +71,26 @@ export function WorkspaceSwitcher({
               align="start"
               sideOffset={4}
             >
-              <DropdownMenuLabel className="text-xs text-muted-foreground">
-                Workspaces
-              </DropdownMenuLabel>
-              {workspaces.map((workspace) => (
-                <DropdownMenuItem
-                  key={workspace.id}
-                  onClick={() => router.push(`/${workspace.slug}/dashboard`)}
-                >
-                  <div className="flex size-6 items-center justify-center rounded-sm border text-xs font-medium">
-                    {workspace.name[0]?.toUpperCase()}
-                  </div>
-                  {workspace.name}
-                  {workspace.id === activeWorkspace.id && (
-                    <Check className="ml-auto size-4" />
-                  )}
-                </DropdownMenuItem>
-              ))}
+              {/* Base UI requires GroupLabel to live inside a Group */}
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  Workspaces
+                </DropdownMenuLabel>
+                {workspaces.map((workspace) => (
+                  <DropdownMenuItem
+                    key={workspace.id}
+                    onClick={() => router.push(`/${workspace.slug}/dashboard`)}
+                  >
+                    <div className="flex size-6 items-center justify-center rounded-sm border text-xs font-medium">
+                      {workspace.name[0]?.toUpperCase()}
+                    </div>
+                    {workspace.name}
+                    {workspace.id === activeWorkspace.id && (
+                      <Check className="ml-auto size-4" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setShowCreateDialog(true)}>
                 <div className="flex size-6 items-center justify-center rounded-sm border bg-background">
