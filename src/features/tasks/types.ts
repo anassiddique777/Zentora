@@ -49,6 +49,27 @@ export type CommentItem = {
   };
 };
 
+export type MyTaskItem = {
+  id: string;
+  title: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  dueDate: string | null;
+  project: {
+    id: string;
+    name: string;
+    key: string;
+    color: string;
+  };
+};
+
+export type MyTasksFilters = {
+  q?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  projectId?: string;
+};
+
 export type TaskDetail = {
   id: string;
   projectId: string;

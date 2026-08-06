@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { BoardTask, TaskDetail } from "./types";
+import type { BoardTask, MyTaskItem, MyTasksFilters, TaskDetail } from "./types";
 
 // Top-level tasks of a project for the Kanban board (subtasks excluded).
 export async function getBoardTasks(projectId: string): Promise<BoardTask[]> {
@@ -33,6 +33,44 @@ export async function getBoardTasks(projectId: string): Promise<BoardTask[]> {
     subtaskCount: subtasks.length,
     subtaskDoneCount: subtasks.filter((s) => s.status === "DONE").length,
     commentCount: _count.comments,
+  }));
+}
+
+// Tasks assigned to the user across all projects of a workspace,
+// filtered server-side so the database does the heavy lifting.
+export async function getMyTasks(
+  workspaceId: string,
+  userId: string,
+  filters: MyTasksFilters,
+): Promise<MyTaskItem[]> {
+  const tasks = await prisma.task.findMany({
+    where: {
+      assigneeId: userId,
+      project: { workspaceId },
+      ...(filters.status && { status: filters.status }),
+      ...(filters.priority && { priority: filters.priority }),
+      ...(filters.projectId && { projectId: filters.projectId }),
+      ...(filters.q && {
+        title: { contains: filters.q, mode: "insensitive" },
+      }),
+    },
+    orderBy: [
+      { dueDate: { sort: "asc", nulls: "last" } },
+      { createdAt: "desc" },
+    ],
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      priority: true,
+      dueDate: true,
+      project: { select: { id: true, name: true, key: true, color: true } },
+    },
+  });
+
+  return tasks.map((task) => ({
+    ...task,
+    dueDate: task.dueDate?.toISOString() ?? null,
   }));
 }
 
