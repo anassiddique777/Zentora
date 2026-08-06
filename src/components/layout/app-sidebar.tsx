@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   ListTodo,
   Settings,
-  Zap,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,41 +23,44 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavUser } from "@/components/layout/nav-user";
+import { WorkspaceSwitcher } from "@/features/workspaces/components/workspace-switcher";
+import type { WorkspaceSummary } from "@/features/workspaces/types";
 import type { SessionUser } from "@/types/user";
 
 const NAV_MAIN = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "My Tasks", href: "/tasks", icon: ListTodo },
-  { title: "Projects", href: "/projects", icon: FolderKanban },
-  { title: "Calendar", href: "/calendar", icon: CalendarDays },
-  { title: "Analytics", href: "/analytics", icon: ChartNoAxesColumn },
+  { title: "Dashboard", segment: "dashboard", icon: LayoutDashboard },
+  { title: "My Tasks", segment: "tasks", icon: ListTodo },
+  { title: "Projects", segment: "projects", icon: FolderKanban },
+  { title: "Calendar", segment: "calendar", icon: CalendarDays },
+  { title: "Analytics", segment: "analytics", icon: ChartNoAxesColumn },
 ] as const;
 
 const NAV_SECONDARY = [
-  { title: "Settings", href: "/settings", icon: Settings },
+  { title: "Settings", segment: "settings", icon: Settings },
 ] as const;
 
-export function AppSidebar({ user }: { user: SessionUser }) {
+export function AppSidebar({
+  user,
+  workspaces,
+  activeWorkspace,
+}: {
+  user: SessionUser;
+  workspaces: WorkspaceSummary[];
+  activeWorkspace: WorkspaceSummary;
+}) {
   const pathname = usePathname();
+
+  function hrefFor(segment: string): string {
+    return `/${activeWorkspace.slug}/${segment}`;
+  }
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Zap className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Zentora</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  Plan. Track. Deliver.
-                </span>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <WorkspaceSwitcher
+          workspaces={workspaces}
+          activeWorkspace={activeWorkspace}
+        />
       </SidebarHeader>
 
       <SidebarContent>
@@ -67,11 +69,11 @@ export function AppSidebar({ user }: { user: SessionUser }) {
           <SidebarGroupContent>
             <SidebarMenu>
               {NAV_MAIN.map((item) => (
-                <SidebarMenuItem key={item.href}>
+                <SidebarMenuItem key={item.segment}>
                   <SidebarMenuButton
-                    render={<Link href={item.href} />}
+                    render={<Link href={hrefFor(item.segment)} />}
                     tooltip={item.title}
-                    isActive={pathname.startsWith(item.href)}
+                    isActive={pathname.startsWith(hrefFor(item.segment))}
                   >
                     <item.icon />
                     <span>{item.title}</span>
@@ -86,11 +88,11 @@ export function AppSidebar({ user }: { user: SessionUser }) {
           <SidebarGroupContent>
             <SidebarMenu>
               {NAV_SECONDARY.map((item) => (
-                <SidebarMenuItem key={item.href}>
+                <SidebarMenuItem key={item.segment}>
                   <SidebarMenuButton
-                    render={<Link href={item.href} />}
+                    render={<Link href={hrefFor(item.segment)} />}
                     tooltip={item.title}
-                    isActive={pathname.startsWith(item.href)}
+                    isActive={pathname.startsWith(hrefFor(item.segment))}
                   >
                     <item.icon />
                     <span>{item.title}</span>

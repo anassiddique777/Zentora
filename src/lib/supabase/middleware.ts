@@ -1,7 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = ["/dashboard"];
+// Everything is protected except these — new pages are secure by default.
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/forgot-password"];
+const PUBLIC_PREFIXES = ["/auth"];
 const AUTH_PAGES = ["/login", "/signup", "/forgot-password"];
 
 // Runs on every request: refreshes the auth token if expired and
@@ -37,10 +39,12 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isProtected = PROTECTED_PREFIXES.some((p) => path.startsWith(p));
+  const isPublic =
+    PUBLIC_PATHS.includes(path) ||
+    PUBLIC_PREFIXES.some((p) => path.startsWith(p));
   const isAuthPage = AUTH_PAGES.some((p) => path.startsWith(p));
 
-  if (!user && isProtected) {
+  if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
