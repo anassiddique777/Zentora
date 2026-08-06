@@ -31,7 +31,22 @@ export const deleteTaskSchema = z.object({
   taskId: z.uuid(),
 });
 
+export const createSubtaskSchema = z.object({
+  parentId: z.uuid(),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(200, "Title must be at most 200 characters"),
+});
+
+export const toggleSubtaskSchema = z.object({
+  taskId: z.uuid(),
+  done: z.boolean(),
+});
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
 export type DeleteTaskInput = z.infer<typeof deleteTaskSchema>;
+export type CreateSubtaskInput = z.infer<typeof createSubtaskSchema>;
+export type ToggleSubtaskInput = z.infer<typeof toggleSubtaskSchema>;

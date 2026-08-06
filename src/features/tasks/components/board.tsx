@@ -19,13 +19,15 @@ import { moveTask } from "../actions";
 import { TASK_STATUSES, type TaskStatus } from "../constants";
 import { BoardColumn } from "./board-column";
 import { TaskCardContent } from "./task-card";
+import { TaskDetailSheet } from "./task-detail-sheet";
 import { TaskFormDialog } from "./task-form-dialog";
 import type { BoardTask, MemberOption } from "../types";
 
 type DialogState =
   | { mode: "closed" }
   | { mode: "create"; status: TaskStatus }
-  | { mode: "edit"; task: BoardTask };
+  | { mode: "edit"; task: BoardTask }
+  | { mode: "detail"; taskId: string };
 
 // Where should the dragged card land, and what fractional position
 // keeps it there? `column` must NOT contain the dragged task.
@@ -156,7 +158,7 @@ export function Board({
               status={status}
               tasks={columns[status]}
               onAdd={(s) => setDialog({ mode: "create", status: s })}
-              onEdit={(t) => setDialog({ mode: "edit", task: t })}
+              onEdit={(t) => setDialog({ mode: "detail", taskId: t.id })}
             />
           ))}
         </div>
@@ -169,6 +171,16 @@ export function Board({
         </DragOverlay>
       </DndContext>
 
+      <TaskDetailSheet
+        taskId={dialog.mode === "detail" ? dialog.taskId : null}
+        projectId={projectId}
+        onClose={() => setDialog({ mode: "closed" })}
+        onEdit={(taskId) => {
+          const task = tasks.find((t) => t.id === taskId);
+          if (task) setDialog({ mode: "edit", task });
+        }}
+      />
+
       <TaskFormDialog
         key={
           dialog.mode === "edit"
@@ -177,7 +189,7 @@ export function Board({
               ? `create-${dialog.status}`
               : "closed"
         }
-        open={dialog.mode !== "closed"}
+        open={dialog.mode === "create" || dialog.mode === "edit"}
         onClose={() => setDialog({ mode: "closed" })}
         projectId={projectId}
         members={members}
