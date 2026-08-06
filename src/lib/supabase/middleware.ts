@@ -39,6 +39,13 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
+
+  // API routes handle auth themselves and return proper JSON errors —
+  // redirecting them to an HTML login page would break fetch() callers.
+  if (path.startsWith("/api")) {
+    return supabaseResponse;
+  }
+
   const isPublic =
     PUBLIC_PATHS.includes(path) ||
     PUBLIC_PREFIXES.some((p) => path.startsWith(p));

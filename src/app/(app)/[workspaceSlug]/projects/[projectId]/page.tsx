@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Kanban } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getBoardTasks } from "@/features/tasks/queries";
+import { Board } from "@/features/tasks/components/board";
+import type { MemberOption } from "@/features/tasks/types";
 
 export const metadata: Metadata = {
-  title: "Project",
+  title: "Board",
 };
 
 export default async function ProjectPage({
@@ -22,7 +24,10 @@ export default async function ProjectPage({
   const project = await prisma.project.findFirst({
     where: {
       id: projectId,
-      workspace: { slug: workspaceSlug, members: { some: { userId: user.id } } },
+      workspace: {
+        slug: workspaceSlug,
+        members: { some: { userId: user.id } },
+      },
     },
   });
 
@@ -30,8 +35,20 @@ export default async function ProjectPage({
     notFound();
   }
 
+  const [tasks, memberRows] = await Promise.all([
+    getBoardTasks(project.id),
+    prisma.workspaceMember.findMany({
+      where: { workspaceId: project.workspaceId },
+      select: {
+        user: { select: { id: true, name: true, avatarUrl: true } },
+      },
+    }),
+  ]);
+
+  const members: MemberOption[] = memberRows.map((row) => row.user);
+
   return (
-    <div className="flex flex-1 flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-4">
       <div className="flex items-center gap-3">
         <span
           aria-hidden
@@ -44,18 +61,7 @@ export default async function ProjectPage({
         </Badge>
       </div>
 
-      {project.description && (
-        <p className="max-w-2xl text-muted-foreground">{project.description}</p>
-      )}
-
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-12 text-center">
-        <Kanban className="size-10 text-muted-foreground/60" aria-hidden />
-        <h2 className="text-lg font-semibold">Board coming soon</h2>
-        <p className="max-w-sm text-sm text-muted-foreground">
-          The Kanban board with tasks and drag &amp; drop lands in the next
-          phase.
-        </p>
-      </div>
+      <Board projectId={project.id} initialTasks={tasks} members={members} />
     </div>
   );
 }
