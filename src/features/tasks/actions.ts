@@ -59,6 +59,17 @@ export async function createTask(
     return { error: "You don't have access to this workspace" };
   }
 
+  // Tasks can only be assigned to members of the same workspace.
+  if (assigneeId) {
+    const assigneeMembership = await getMembership(
+      project.workspaceId,
+      assigneeId,
+    );
+    if (!assigneeMembership) {
+      return { error: "Assignee must be a member of this workspace" };
+    }
+  }
+
   // New tasks go to the bottom of their column.
   const last = await prisma.task.findFirst({
     where: { projectId, status },
@@ -104,6 +115,17 @@ export async function updateTask(
   const membership = await getMembership(context.project.workspaceId, user.id);
   if (!membership) {
     return { error: "You don't have access to this workspace" };
+  }
+
+  // Tasks can only be assigned to members of the same workspace.
+  if (assigneeId) {
+    const assigneeMembership = await getMembership(
+      context.project.workspaceId,
+      assigneeId,
+    );
+    if (!assigneeMembership) {
+      return { error: "Assignee must be a member of this workspace" };
+    }
   }
 
   await prisma.task.update({
