@@ -1,5 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import type { BoardTask, MyTaskItem, MyTasksFilters, TaskDetail } from "./types";
+import type {
+  BoardTask,
+  CalendarTask,
+  MyTaskItem,
+  MyTasksFilters,
+  TaskDetail,
+} from "./types";
 
 // Top-level tasks of a project for the Kanban board (subtasks excluded).
 export async function getBoardTasks(projectId: string): Promise<BoardTask[]> {
@@ -71,6 +77,35 @@ export async function getMyTasks(
   return tasks.map((task) => ({
     ...task,
     dueDate: task.dueDate?.toISOString() ?? null,
+  }));
+}
+
+// Tasks with a due date inside the visible calendar range.
+export async function getCalendarTasks(
+  workspaceId: string,
+  rangeStart: Date,
+  rangeEnd: Date,
+): Promise<CalendarTask[]> {
+  const tasks = await prisma.task.findMany({
+    where: {
+      project: { workspaceId },
+      parentId: null,
+      dueDate: { gte: rangeStart, lt: rangeEnd },
+    },
+    orderBy: { position: "asc" },
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      dueDate: true,
+      project: { select: { id: true, key: true, color: true } },
+    },
+  });
+
+  return tasks.map((task) => ({
+    ...task,
+    // dueDate is non-null here because of the where clause
+    dueDate: task.dueDate!.toISOString(),
   }));
 }
 

@@ -70,6 +70,18 @@ export type MyTasksFilters = {
   projectId?: string;
 };
 
+export type CalendarTask = {
+  id: string;
+  title: string;
+  status: TaskStatus;
+  dueDate: string; // always present — calendar only shows dated tasks
+  project: {
+    id: string;
+    key: string;
+    color: string;
+  };
+};
+
 export type TaskDetail = {
   id: string;
   projectId: string;
