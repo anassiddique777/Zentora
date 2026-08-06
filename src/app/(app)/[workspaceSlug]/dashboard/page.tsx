@@ -17,6 +17,9 @@ import {
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getWorkspaceForUser } from "@/features/workspaces/queries";
+import { getWorkspaceAnalytics } from "@/features/analytics/queries";
+import { CreatedArea } from "@/features/analytics/components/created-area";
+import { StatusDonut } from "@/features/analytics/components/status-donut";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -35,28 +38,35 @@ export default async function DashboardPage({
     notFound();
   }
 
-  const [profile, projectCount, openTaskCount, memberCount, recentProjects] =
-    await Promise.all([
-      prisma.user.findUnique({
-        where: { id: user.id },
-        select: { name: true },
-      }),
-      prisma.project.count({ where: { workspaceId: workspace.id } }),
-      prisma.task.count({
-        where: {
-          project: { workspaceId: workspace.id },
-          assigneeId: user.id,
-          status: { not: "DONE" },
-        },
-      }),
-      prisma.workspaceMember.count({ where: { workspaceId: workspace.id } }),
-      prisma.project.findMany({
-        where: { workspaceId: workspace.id },
-        orderBy: { updatedAt: "desc" },
-        take: 5,
-        select: { id: true, name: true, key: true, color: true },
-      }),
-    ]);
+  const [
+    profile,
+    projectCount,
+    openTaskCount,
+    memberCount,
+    recentProjects,
+    analytics,
+  ] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: user.id },
+      select: { name: true },
+    }),
+    prisma.project.count({ where: { workspaceId: workspace.id } }),
+    prisma.task.count({
+      where: {
+        project: { workspaceId: workspace.id },
+        assigneeId: user.id,
+        status: { not: "DONE" },
+      },
+    }),
+    prisma.workspaceMember.count({ where: { workspaceId: workspace.id } }),
+    prisma.project.findMany({
+      where: { workspaceId: workspace.id },
+      orderBy: { updatedAt: "desc" },
+      take: 5,
+      select: { id: true, name: true, key: true, color: true },
+    }),
+    getWorkspaceAnalytics(workspace.id),
+  ]);
 
   const stats = [
     {
@@ -106,6 +116,25 @@ export default async function DashboardPage({
           </Card>
         ))}
       </div>
+
+      {analytics.total > 0 && (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Overview</h2>
+            <Link
+              href={`/${workspace.slug}/analytics`}
+              className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              View analytics
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <StatusDonut data={analytics.byStatus} total={analytics.total} />
+            <CreatedArea data={analytics.createdPerDay} />
+          </div>
+        </div>
+      )}
 
       {recentProjects.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-12 text-center">
