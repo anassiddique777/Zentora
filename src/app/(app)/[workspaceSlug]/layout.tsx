@@ -10,8 +10,10 @@ import {
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
+  getMembership,
   getUserWorkspaces,
   getWorkspaceForUser,
+  getWorkspaceMembers,
 } from "@/features/workspaces/queries";
 import type { SessionUser } from "@/types/user";
 
@@ -32,13 +34,20 @@ export default async function WorkspaceLayout({
     notFound();
   }
 
-  const [workspaces, profile] = await Promise.all([
+  const [workspaces, profile, membership, members] = await Promise.all([
     getUserWorkspaces(user.id),
     prisma.user.findUnique({
       where: { id: user.id },
       select: { name: true, email: true, avatarUrl: true },
     }),
+    getMembership(workspace.id, user.id),
+    // Settings dialog data — revalidatePath keeps it fresh after actions.
+    getWorkspaceMembers(workspace.id),
   ]);
+
+  if (!membership) {
+    notFound();
+  }
 
   const sessionUser: SessionUser = {
     id: user.id,
@@ -53,6 +62,8 @@ export default async function WorkspaceLayout({
         user={sessionUser}
         workspaces={workspaces}
         activeWorkspace={workspace}
+        members={members}
+        currentRole={membership.role}
       />
       <SidebarInset className="h-svh min-w-0 overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">

@@ -29,7 +29,15 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-export function NavUser({ user }: { user: SessionUser }) {
+export function NavUser({
+  user,
+  onOpenProfile,
+  onOpenSettings,
+}: {
+  user: SessionUser;
+  onOpenProfile: () => void;
+  onOpenSettings: () => void;
+}) {
   const { isMobile } = useSidebar();
 
   return (
@@ -85,11 +93,11 @@ export function NavUser({ user }: { user: SessionUser }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem onClick={onOpenProfile}>
                 <UserRound />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem onClick={onOpenSettings}>
                 <Settings />
                 Settings
               </DropdownMenuItem>
