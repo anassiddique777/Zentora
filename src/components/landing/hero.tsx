@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrowserFrame } from "./browser-frame";
+import { MockDashboard } from "./mocks/mock-dashboard";
 
-export function Hero({ screenshotExists }: { screenshotExists: boolean }) {
+export function Hero() {
   return (
     <section className="relative overflow-hidden px-4 pt-32 pb-16 sm:px-6 sm:pt-40">
       {/* Soft glow behind the hero */}
@@ -35,11 +36,9 @@ export function Hero({ screenshotExists }: { screenshotExists: boolean }) {
       </div>
 
       <div className="mx-auto mt-16 max-w-5xl">
-        <BrowserFrame
-          src="/screenshots/dashboard.png"
-          alt="Zentora dashboard"
-          exists={screenshotExists}
-        />
+        <BrowserFrame url="zentora.app/dashboard">
+          <MockDashboard />
+        </BrowserFrame>
       </div>
     </section>
   );

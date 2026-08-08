@@ -1,9 +1,11 @@
 import { Check } from "lucide-react";
 import { BrowserFrame } from "./browser-frame";
+import { MockAnalytics } from "./mocks/mock-analytics";
+import { MockBoard } from "./mocks/mock-board";
 
 type ShowcaseItem = {
-  src: string;
-  alt: string;
+  url: string;
+  preview: React.ReactNode;
   title: string;
   description: string;
   points: string[];
@@ -11,8 +13,8 @@ type ShowcaseItem = {
 
 const ITEMS: ShowcaseItem[] = [
   {
-    src: "/screenshots/board.png",
-    alt: "Kanban board",
+    url: "zentora.app/projects/website-redesign",
+    preview: <MockBoard />,
     title: "A board that keeps up with you",
     description:
       "Move tasks between Backlog, Todo, In Progress, Review, and Done. The UI updates instantly and syncs in the background.",
@@ -23,8 +25,8 @@ const ITEMS: ShowcaseItem[] = [
     ],
   },
   {
-    src: "/screenshots/analytics.png",
-    alt: "Analytics dashboard",
+    url: "zentora.app/analytics",
+    preview: <MockAnalytics />,
     title: "Numbers your standup will love",
     description:
       "Completion rate, overdue tasks, per-project workload, and a 30-day trend — aggregated in the database, rendered beautifully.",
@@ -36,13 +38,13 @@ const ITEMS: ShowcaseItem[] = [
   },
 ];
 
-export function Showcase({ existing }: { existing: Record<string, boolean> }) {
+export function Showcase() {
   return (
     <section id="preview" className="scroll-mt-20 px-4 py-8 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-col gap-20">
         {ITEMS.map((item, index) => (
           <div
-            key={item.src}
+            key={item.title}
             className="grid items-center gap-8 lg:grid-cols-2"
           >
             <div className={index % 2 === 1 ? "lg:order-2" : undefined}>
@@ -62,11 +64,7 @@ export function Showcase({ existing }: { existing: Record<string, boolean> }) {
               </ul>
             </div>
             <div className={index % 2 === 1 ? "lg:order-1" : undefined}>
-              <BrowserFrame
-                src={item.src}
-                alt={item.alt}
-                exists={existing[item.src] ?? false}
-              />
+              <BrowserFrame url={item.url}>{item.preview}</BrowserFrame>
             </div>
           </div>
         ))}
