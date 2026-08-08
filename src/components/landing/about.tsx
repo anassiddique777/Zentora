@@ -132,7 +132,7 @@ export function About() {
             </p>
             <Button
               size="lg"
-              className="mt-8 bg-white text-slate-900 hover:bg-white/90"
+              className="btn-shine mt-8 bg-white text-slate-900 hover:bg-white/90 hover:[&_svg]:translate-x-1"
               render={<Link href="/signup" />}
             >
               Get started — it&apos;s free

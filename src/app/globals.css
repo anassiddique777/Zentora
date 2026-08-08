@@ -243,6 +243,39 @@
   }
 }
 
+/* Shine sweep across a button on hover (pair with a solid background) */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgb(255 255 255 / 0.35),
+    transparent
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn-shine::after {
+    transition: transform 0.7s ease;
+  }
+
+  .btn-shine:hover::after {
+    transform: translateX(350%) skewX(-15deg);
+  }
+}
+
 /* Footer decorations */
 .footer-link {
   position: relative;

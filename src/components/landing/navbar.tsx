@@ -50,7 +50,7 @@ export function Navbar() {
             Log in
           </Button>
           <Button
-            className={cn(scrolled && "rounded-full")}
+            className={cn("btn-shine", scrolled && "rounded-full")}
             render={<Link href="/signup" />}
           >
             Get started

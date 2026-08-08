@@ -25,7 +25,11 @@ export function Hero() {
           kanban boards, tasks, analytics, and calendar in one clean workspace.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Button size="lg" render={<Link href="/signup" />}>
+          <Button
+            size="lg"
+            className="btn-shine hover:[&_svg]:translate-x-1"
+            render={<Link href="/signup" />}
+          >
             Start for free
             <ArrowRight aria-hidden />
           </Button>

@@ -112,7 +112,11 @@ export function LoginForm() {
             )}
           </div>
 
-          <Button type="submit" className="h-11 w-full" disabled={isPending}>
+          <Button
+            type="submit"
+            className="btn-shine h-11 w-full"
+            disabled={isPending}
+          >
             {isPending && <Loader2 className="animate-spin" aria-hidden />}
             Log in
           </Button>
