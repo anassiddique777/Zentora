@@ -74,25 +74,35 @@ export default async function DashboardPage({
       value: projectCount,
       description: `In ${workspace.name}`,
       icon: FolderKanban,
+      iconClass: "bg-blue-500/10 text-blue-500",
     },
     {
       title: "Open tasks",
       value: openTaskCount,
       description: "Assigned to you",
       icon: ListTodo,
+      iconClass: "bg-amber-500/10 text-amber-500",
     },
     {
       title: "Team members",
       value: memberCount,
       description: "In this workspace",
       icon: Users,
+      iconClass: "bg-violet-500/10 text-violet-500",
     },
   ];
+
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">
+        <p className="text-sm text-muted-foreground">{today}</p>
+        <h1 className="mt-0.5 text-2xl font-bold tracking-tight">
           Welcome back, {profile?.name ?? "there"}
         </h1>
         <p className="text-muted-foreground">
@@ -102,11 +112,15 @@ export default async function DashboardPage({
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => (
-          <Card key={stat.title}>
+          <Card key={stat.title} className="transition-shadow hover:shadow-md">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardDescription>{stat.title}</CardDescription>
-                <stat.icon className="size-4 text-muted-foreground" />
+                <span
+                  className={`flex size-8 items-center justify-center rounded-lg ${stat.iconClass}`}
+                >
+                  <stat.icon className="size-4" aria-hidden />
+                </span>
               </div>
               <CardTitle className="text-3xl tabular-nums">
                 {stat.value}

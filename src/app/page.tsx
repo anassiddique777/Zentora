@@ -1,24 +1,42 @@
-import { Button } from "@/components/ui/button";
+import { existsSync } from "fs";
+import path from "path";
+import { About } from "@/components/landing/about";
+import { Features } from "@/components/landing/features";
+import { Footer } from "@/components/landing/footer";
+import { Hero } from "@/components/landing/hero";
+import { Navbar } from "@/components/landing/navbar";
+import { Showcase } from "@/components/landing/showcase";
+
+const SCREENSHOTS = [
+  "/screenshots/dashboard.png",
+  "/screenshots/board.png",
+  "/screenshots/analytics.png",
+];
+
+// Checked at render time on the server — drop PNGs into
+// public/screenshots/ and they appear without any code changes.
+function checkScreenshots(): Record<string, boolean> {
+  return Object.fromEntries(
+    SCREENSHOTS.map((src) => [
+      src,
+      existsSync(path.join(process.cwd(), "public", src)),
+    ]),
+  );
+}
 
 export default function Home() {
+  const existing = checkScreenshots();
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
-      <span className="rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
-        Zentora — in development
-      </span>
-      <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-6xl">
-        Plan. Track. Deliver.
-      </h1>
-      <p className="max-w-md text-balance text-muted-foreground">
-        A modern project management platform for teams that ship. Built with
-        Next.js 15, TypeScript, and Supabase.
-      </p>
-      <div className="flex gap-3">
-        <Button size="lg">Get Started</Button>
-        <Button size="lg" variant="outline">
-          Learn More
-        </Button>
-      </div>
-    </main>
+    <div className="min-h-screen">
+      <Navbar />
+      <main>
+        <Hero screenshotExists={existing["/screenshots/dashboard.png"]} />
+        <Features />
+        <Showcase existing={existing} />
+        <About />
+      </main>
+      <Footer />
+    </div>
   );
 }
