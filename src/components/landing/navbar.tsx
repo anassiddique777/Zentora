@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -6,9 +7,7 @@ export function Navbar() {
     <header className="fixed inset-x-0 top-0 z-50 border-b bg-background/80 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2 font-bold">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">
-            Z
-          </span>
+          <Image src="/logo-icon.png" alt="" width={30} height={30} />
           Zentora
         </Link>
 
