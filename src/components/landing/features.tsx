@@ -64,15 +64,31 @@ export function Features() {
           {FEATURES.map((feature) => (
             <div
               key={feature.title}
-              className="rounded-xl border bg-card p-6 transition-shadow hover:shadow-md"
+              className="group relative overflow-hidden rounded-xl border bg-card p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/10"
             >
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-                <feature.icon className="size-5 text-primary" aria-hidden />
+              {/* Gradient fill rising from the bottom on hover */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 translate-y-full bg-gradient-to-tr from-blue-500/15 via-emerald-500/10 to-transparent transition-transform duration-500 ease-out group-hover:translate-y-0"
+              />
+              {/* Corner glow */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -top-16 -right-16 size-36 rounded-full bg-blue-500/20 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+              />
+
+              <div className="relative">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 transition-all duration-300 ease-out group-hover:scale-110 group-hover:rounded-xl group-hover:bg-gradient-to-br group-hover:from-blue-500 group-hover:to-emerald-500 group-hover:shadow-lg group-hover:shadow-blue-500/30">
+                  <feature.icon
+                    className="size-5 text-primary transition-colors duration-300 group-hover:text-white"
+                    aria-hidden
+                  />
+                </div>
+                <h3 className="mt-4 font-semibold">{feature.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="mt-4 font-semibold">{feature.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                {feature.description}
-              </p>
             </div>
           ))}
         </div>

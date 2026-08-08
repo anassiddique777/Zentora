@@ -85,7 +85,7 @@ export function ResetPasswordForm() {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button type="submit" className="btn-shine w-full" disabled={isPending}>
             {isPending && <Loader2 className="animate-spin" aria-hidden />}
             Update password
           </Button>
