@@ -222,6 +222,85 @@
   }
 }
 
+/* Scroll-reveal (used with the Reveal component) */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transform: none;
+    transition: opacity 0.4s ease;
+  }
+}
+
+/* Footer decorations */
+.footer-link {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.footer-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.footer-link:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .footer-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklch, var(--primary) 60%, transparent),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: footer-shimmer 5s linear infinite;
+  }
+
+  .footer-watermark {
+    animation: watermark-pan 14s linear infinite alternate;
+  }
+}
+
+@keyframes footer-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes watermark-pan {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
 /* Scrollable but with the scrollbar visually hidden */
 @utility no-scrollbar {
   -ms-overflow-style: none;
