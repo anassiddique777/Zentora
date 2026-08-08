@@ -1,10 +1,10 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,9 +19,11 @@ import {
 } from "@/components/ui/card";
 import { login } from "../actions";
 import { loginSchema, type LoginInput } from "../schemas";
+import { GoogleButton } from "./google-button";
 
 export function LoginForm() {
   const [isPending, startTransition] = useTransition();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -42,12 +44,12 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-xl">Welcome back</CardTitle>
-        <CardDescription>Log in to your Zentora account</CardDescription>
+    <Card className="w-full max-w-xl py-10 shadow-2xl sm:min-w-[28rem]">
+      <CardHeader className="px-10">
+        <CardTitle className="text-3xl">Sign in</CardTitle>
+        <CardDescription>Welcome back — log in to Zentora</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-10">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
@@ -61,6 +63,7 @@ export function LoginForm() {
               placeholder="you@example.com"
               autoComplete="email"
               aria-invalid={!!errors.email}
+              className="h-11"
               {...register("email")}
             />
             {errors.email && (
@@ -80,13 +83,28 @@ export function LoginForm() {
                 Forgot password?
               </Link>
             </div>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              aria-invalid={!!errors.password}
-              {...register("password")}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                aria-invalid={!!errors.password}
+                className="h-11 pr-10"
+                {...register("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {showPassword ? (
+                  <EyeOff className="size-4" aria-hidden />
+                ) : (
+                  <Eye className="size-4" aria-hidden />
+                )}
+              </button>
+            </div>
             {errors.password && (
               <p role="alert" className="text-sm text-destructive">
                 {errors.password.message}
@@ -94,13 +112,21 @@ export function LoginForm() {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button type="submit" className="h-11 w-full" disabled={isPending}>
             {isPending && <Loader2 className="animate-spin" aria-hidden />}
             Log in
           </Button>
         </form>
+
+        <div className="my-4 flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" aria-hidden />
+          <span className="text-xs text-muted-foreground">or</span>
+          <div className="h-px flex-1 bg-border" aria-hidden />
+        </div>
+
+        <GoogleButton />
       </CardContent>
-      <CardFooter className="justify-center text-sm text-muted-foreground">
+      <CardFooter className="justify-center px-10 text-sm text-muted-foreground">
         Don&apos;t have an account?&nbsp;
         <Link
           href="/signup"

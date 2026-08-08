@@ -46,7 +46,7 @@ export function SignupForm() {
 
   if (submittedEmail) {
     return (
-      <Card className="w-full max-w-sm text-center">
+      <Card className="w-full max-w-xl text-center sm:min-w-[28rem]">
         <CardHeader className="items-center">
           <MailCheck className="size-10 text-primary" aria-hidden />
           <CardTitle className="text-xl">Check your email</CardTitle>
@@ -63,7 +63,7 @@ export function SignupForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-xl sm:min-w-[28rem]">
       <CardHeader>
         <CardTitle className="text-xl">Create your account</CardTitle>
         <CardDescription>Start planning with Zentora for free</CardDescription>

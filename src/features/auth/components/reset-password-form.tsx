@@ -40,7 +40,7 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-xl sm:min-w-[28rem]">
       <CardHeader>
         <CardTitle className="text-xl">Set a new password</CardTitle>
         <CardDescription>
